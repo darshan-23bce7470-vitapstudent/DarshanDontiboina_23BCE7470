@@ -1,0 +1,72 @@
+drop database inventory;
+create database inventory;
+use inventory;
+
+create table category(
+c_id int primary key,
+c_name varchar(15),
+c_details varchar(25)
+);
+
+insert into category values (101,"electronics","they are not washable"),
+							(102,"furnitures","they are breakable");
+              
+select * from category;
+
+create table products(
+p_id int primary key,
+p_name varchar(15),
+p_details varchar(25),
+c_id int,
+foreign key products(c_id) references category(c_id) on update cascade
+);
+insert into products values (501,"samsung s23","12 gb ram",101),
+							(502,"samsung s21","8 gb ram",101);
+-- delete from category where c_id=101;
+update category set c_id = 109 where c_id=101;
+desc products;
+select * from category;
+select * from products;
+
+
+
+create table constraints(
+    id int primary key,
+    def varchar(20),
+    uni int unique,
+    nu int not null
+);
+
+insert into constraints values (1,'hari',101,1001),(2,'ali',102,1002),(3,'gani',103,1003);
+alter table constraints add unique(nu);
+alter table constraints add constraint hello unique (def,nu);
+desc constraints;
+alter table constraints drop index nu;
+
+alter table constraints drop primary key;
+alter table constraints add constraint hello primary key(id,def);
+alter table constraints add primary key(id);
+
+create table t1(
+    id int primary key,
+    def varchar(20),
+    uni int unique,
+    nu int not null,
+    check (nu<1003)
+);
+alter table t1 add check (nu<1003);
+
+create table t1(
+    id int primary key,
+    def varchar(20),
+    uni int unique,
+    nu int not null,
+    check (nu<1005)
+);
+alter table t1 add check (nu<1005);
+insert into t1 values (1,'hari',101,1001),(2,'ali',102,1002),(3,'gani',103,1003);
+alter table t1 add (
+	c1 varchar(10) default 'name'
+);
+alter table t1 drop column c1;
+select * from t1;
