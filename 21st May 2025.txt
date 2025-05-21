@@ -1,0 +1,54 @@
+use vit;
+select * from worker;
+desc worker;
+select * from worker where salary between 1000 and 200000;
+select * from worker where salary not between 200000 and 9000000;
+select * from worker where salary between 123456 and 654321 and department in ('Admin','HR');
+select min(salary) from worker;
+select max(salary) from worker;
+select avg(salary) from worker;
+select sum(salary) from worker;
+select count(*) from worker;
+use vit;
+CREATE TABLE Worker2 (
+	WORKER_ID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	FIRST_NAME CHAR(25),
+	LAST_NAME CHAR(25),
+	SALARY INT(15),
+	JOINING_DATE DATETIME,
+	DEPARTMENT CHAR(25)
+);
+use vit;
+INSERT INTO Worker2
+	(WORKER_ID, FIRST_NAME, LAST_NAME, SALARY, JOINING_DATE, DEPARTMENT) VALUES
+		(001, 'Monika', 'Arora', 100000, '14-02-20 09.00.00', 'HR'),
+		(002, 'Niharika', 'Verma', 80000, '14-06-11 09.00.00', 'Admin'),
+		(003, 'Vishal', 'Singhal', 300000, '14-02-20 09.00.00', 'HR'),
+		(004, 'Amitabh', 'Singh', 500000, '14-02-20 09.00.00', 'Admin'),
+		(005, 'Vivek', 'Bhati', 500000, '14-06-11 09.00.00', 'Admin'),
+		(006, 'Vipul', 'Diwan', 200000, '14-06-11 09.00.00', 'Account'),
+		(007, 'Satish', 'Kumar', 75000, '14-01-20 09.00.00', 'Account'),
+		(008, 'Geetika', 'Chauhan', 90000, '14-04-11 09.00.00', 'Admin');
+
+select distinct(department) from worker2;
+select department from worker union select department from worker2;
+select department from worker union all select department from worker2;
+select worker_id,department from worker where department='Admin' union select worker_id,department from worker2 where department='Admin';
+SELECT First_name,salary,
+CASE
+WHEN salary >= 300000 THEN 'Rich People'
+WHEN salary < 300000 && salary>=100000 THEN 'Middle Layer'
+When salary >10000 && salary <100000 Then 'Poor People'
+ELSE 'Data Not Found'
+END
+AS Status_Check_BasedSalary
+FROM worker;
+select * from worker where salary<200000 order by salary;
+select * from worker where salary<200000 order by salary desc, worker_id asc;
+create view admin_team as select * from worker where department = 'admin' and salary<200000;
+create view hr_team as select * from worker where department = 'hr' and salary<200000;
+create view account_team as select * from worker where department = 'account' and salary<200000;
+select * from admin_team;
+
+drop view admin_team;
+create or replace view admin_team as select * from worker where department = 'admin' and salary<200000;
