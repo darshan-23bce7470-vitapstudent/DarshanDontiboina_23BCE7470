@@ -1,0 +1,246 @@
+package connection;
+import org.bson.Document;
+
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.MongoIterable;
+
+public class MongoDBConnection {
+   public static void main(String[] args) {
+      // Creating a Mongo client 
+      MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
+      
+      MongoIterable<String> loop1 = mongoClient.listDatabaseNames();
+      for (String name : loop1) {
+         System.out.println(name);
+      }
+   
+      
+   }
+}
+
+package connection;
+import org.bson.Document;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+
+public class MongoDBConnection3 {
+    public static void main(String[] args) {
+        // Creating a Mongo client
+        MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
+
+        // get the database
+        MongoDatabase database = mongoClient.getDatabase("vit");
+
+        // Retrieving a collection
+        MongoCollection<Document> collection = database.getCollection("sales");
+
+        collection.drop();
+        System.out.println("Collection dropped.");
+    }
+}
+
+package connection;
+import org.bson.Document;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.MongoIterable;
+public class MongoDBConnection4 {
+	public static void main(String[] args) {
+	    // Creating a Mongo client
+	    MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
+
+	    // Get the database
+	    MongoDatabase database = mongoClient.getDatabase("vit");
+
+	    // Create the collection
+	    database.createCollection("sampleCollection");
+
+	    // Get the list of collection names
+	    MongoIterable<String> collections = database.listCollectionNames();
+
+	    for (String name : collections) {
+	        System.out.println(name);
+	    }
+	}
+
+}
+
+
+package connection;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.bson.Document;
+
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+
+public class MongoDBConnection5 {
+   public static void main(String[] args) {
+      // Creating a Mongo client 
+      MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
+      MongoDatabase database = mongoClient.getDatabase("myDb");
+
+      // Get the collection
+      MongoCollection<Document> collection = database.getCollection("sampleCollection");
+
+      Document document = new Document("First_Name", "Mahesh")
+         .append("Last_Name", "Parashar")
+         .append("Date_Of_Birth", "1990-08-21")
+         .append("e_mail", "mahesh_parashar.123@gmail.com")
+         .append("phone", "9034343345");
+
+      collection.insertOne(document);
+      List<Document> documents = new ArrayList<>();
+
+      documents.add(new Document("First_Name", "Radhika")
+         .append("Last_Name", "Sharma")
+         .append("Date_Of_Birth", "1995-09-26")
+         .append("e_mail", "radhika_sharma.123@gmail.com")
+         .append("phone", "9000012345"));
+
+      documents.add(new Document("First_Name", "Rachel")
+         .append("Last_Name", "Christopher")
+         .append("Date_Of_Birth", "1990-02-16")
+         .append("e_mail", "Rachel_Christopher.123@gmail.com")
+         .append("phone", "9000054321"));
+
+      documents.add(new Document("First_Name", "Fathima")
+         .append("Last_Name", "Sheik")
+         .append("Date_Of_Birth", "1990-02-16")
+         .append("e_mail", "Fathima_Sheik.123@gmail.com")
+         .append("phone", "9000054321"));
+
+      collection.insertMany(documents);
+
+      System.out.println("Documents inserted.");
+   }
+}
+
+package connection;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.FindIterable;
+import org.bson.Document;
+import com.mongodb.client.model.Filters;
+
+public class MongoDBConnection6 {
+    public static void main(String[] args) {
+        // Creating a Mongo client
+        MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
+        MongoDatabase database = mongoClient.getDatabase("myDb");
+
+        // Get the collection
+        MongoCollection<Document> collection = database.getCollection("sampleCollection");
+
+        // Find all documents
+        System.out.println("--- All Documents ---");
+        FindIterable<Document> allDocuments = collection.find();
+        for (Document document : allDocuments) {
+            System.out.println(document);
+        }
+        System.out.println("--- End of All Documents ---");
+
+
+        System.out.println("\n***Selected Document***");
+
+        // Select a particular document
+        FindIterable<Document> documents = collection.find(Filters.eq("First_Name", "Mahesh"));
+        for (Document document : documents) {
+            System.out.println(document);
+        }
+
+        // Close the client
+        mongoClient.close();
+    }
+}
+
+package connection;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.FindIterable;
+import org.bson.Document;
+import com.mongodb.client.model.Filters;
+
+import java.util.Scanner; // Import the Scanner class
+
+public class MongoDBConnection7 {
+    public static void main(String[] args) {
+        // Create a Scanner object for user input
+        Scanner scanner = new Scanner(System.in);
+
+        // --- User input for MongoDB connection details ---
+        System.out.print("Enter MongoDB connection URI (e.g., mongodb://localhost:27017): ");
+        String mongoUri = scanner.nextLine();
+
+        System.out.print("Enter database name (e.g., myDb): ");
+        String dbName = scanner.nextLine();
+
+        System.out.print("Enter collection name (e.g., sampleCollection): ");
+        String collectionName = scanner.nextLine();
+
+        MongoClient mongoClient = null; // Initialize to null for try-finally block
+
+        try {
+            // Creating a Mongo client
+            mongoClient = MongoClients.create(mongoUri);
+            MongoDatabase database = mongoClient.getDatabase(dbName);
+            MongoCollection<Document> collection = database.getCollection(collectionName);
+
+            // Find all documents
+            System.out.println("\n--- All Documents in '" + collectionName + "' ---");
+            FindIterable<Document> allDocuments = collection.find();
+            for (Document document : allDocuments) {
+                System.out.println(document);
+            }
+            System.out.println("--- End of All Documents ---");
+
+            // --- User input for selecting a particular document ---
+            System.out.println("\n***Searching for a specific document***");
+            System.out.print("Enter the field name to search by (e.g., First_Name): ");
+            String searchField = scanner.nextLine();
+
+            System.out.print("Enter the value to search for (e.g., Mahesh): ");
+            String searchValue = scanner.nextLine();
+
+            // Select a particular document based on user input
+            FindIterable<Document> documents = collection.find(Filters.eq(searchField, searchValue));
+            System.out.println("\n--- Documents where " + searchField + " is '" + searchValue + "' ---");
+            if (!documents.iterator().hasNext()) { // Check if iterator has any elements
+                System.out.println("No documents found matching the criteria.");
+            } else {
+                for (Document document : documents) {
+                    System.out.println(document);
+                }
+            }
+            System.out.println("--- End of Selected Documents ---");
+
+        } catch (Exception e) {
+            System.err.println("An error occurred: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            // Close the client and scanner in a finally block to ensure resources are released
+            if (mongoClient != null) {
+                mongoClient.close();
+                System.out.println("\nMongoDB client closed.");
+            }
+            if (scanner != null) {
+                scanner.close();
+                System.out.println("Scanner closed.");
+            }
+        }
+    }
+}
