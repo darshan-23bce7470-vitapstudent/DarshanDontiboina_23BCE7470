@@ -1,0 +1,59 @@
+mkdir C:\data\cfg1, C:\data\cfg2, C:\data\cfg3
+mkdir C:\data\shard1_1, C:\data\shard1_2, C:\data\shard1_3
+mkdir C:\data\shard2_1, C:\data\shard2_2, C:\data\shard2_3
+mkdir C:\data\mongos
+mongod --configsvr --replSet configReplSet --port 27019 --dbpath C:\data\cfg1 --bind_ip localhost
+mongod --configsvr --replSet configReplSet --port 27020 --dbpath C:\data\cfg2 --bind_ip localhost
+mongod --configsvr --replSet configReplSet --port 27021 --dbpath C:\data\cfg3 --bind_ip localhost
+mongo --port 27019
+rs.initiate({
+  _id: "configReplSet",
+  configsvr: true,
+  members: [
+    { _id: 0, host: "localhost:27019" },
+    { _id: 1, host: "localhost:27020" },
+    { _id: 2, host: "localhost:27021" }
+  ]
+})
+mongod --shardsvr --replSet shard1ReplSet --port 27022 --dbpath C:\data\shard1_1 --bind_ip localhost
+mongod --shardsvr --replSet shard1ReplSet --port 27023 --dbpath C:\data\shard1_2 --bind_ip localhost
+mongod --shardsvr --replSet shard1ReplSet --port 27024 --dbpath C:\data\shard1_3 --bind_ip localhost
+mongo --port 27022
+rs.initiate({
+  _id: "shard1ReplSet",
+  members: [
+    { _id: 0, host: "localhost:27022" },
+    { _id: 1, host: "localhost:27023" },
+    { _id: 2, host: "localhost:27024" }
+  ]
+})
+
+mongod --shardsvr --replSet shard2ReplSet --port 27025 --dbpath C:\data\shard2_1 --bind_ip localhost
+mongod --shardsvr --replSet shard2ReplSet --port 27026 --dbpath C:\data\shard2_2 --bind_ip localhost
+mongod --shardsvr --replSet shard2ReplSet --port 27027 --dbpath C:\data\shard2_3 --bind_ip localhost
+mongo --port 27025
+rs.initiate({
+  _id: "shard2ReplSet",
+  members: [
+    { _id: 0, host: "localhost:27025" },
+    { _id: 1, host: "localhost:27026" },
+    { _id: 2, host: "localhost:27027" }
+  ]
+})
+mongos --configdb configReplSet/localhost:27019,localhost:27020,localhost:27021 --port 27018 --bind_ip localhost
+mongo --port 27018
+sh.addShard("shard1ReplSet/localhost:27022,localhost:27023,localhost:27024")
+sh.addShard("shard2ReplSet/localhost:27025,localhost:27026,localhost:27027")
+sh.enableSharding("testDB")
+sh.shardCollection("testDB.testCollection", { "userId": 1 })
+sh.status()
+mongodb://localhost:27018/
+use testDB
+for (let i = 0; i < 10000; i++) {
+  db.testCollection.insert({
+    userId: i,
+    data: "Sample data " + i,
+    timestamp: new Date()
+  })
+}
+db.testCollection.getShardDistribution()
