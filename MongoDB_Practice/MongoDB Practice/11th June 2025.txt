@@ -1,0 +1,65 @@
+package connection;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.BasicDBObject;
+import com.mongodb.client.AggregateIterable;
+import com.mongodb.client.FindIterable;
+import org.bson.Document;
+//import org.bson.Document;
+import static com.mongodb.client.model.Aggregates.*;
+import static com.mongodb.client.model.Accumulators.*;
+import java.util.*;
+public class MongoDBConnection11 {
+    public static void main(String[] args) {
+        // Creating a Mongo client
+        MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
+        MongoDatabase database = mongoClient.getDatabase("vit");
+        
+        MongoCollection<Document> collection = database.getCollection("products");
+        Document priceRangeQuery = new Document("price", new Document("$gte", 700).append("$lte", 800));
+        FindIterable<Document> products = collection.find(priceRangeQuery);
+        FindIterable<Document> allDocuments = collection.find();
+//1        
+for (Document document : products) {
+        	
+            System.out.println(document);
+        	//i++;
+        }
+int totalPrice = 0;
+int count = 0 ;
+
+//2
+for (Document doc : collection.find()) {
+    Integer price = doc.getInteger("price");
+    if (price != null) {
+        totalPrice += price;
+        count ++ ;
+    }
+}
+
+System.out.println("Average Price: " + totalPrice/count);
+
+AggregateIterable<Document> result = collection.aggregate(Arrays.asList(
+	    group(null, avg("avgPrice", "$price"))
+	));
+
+	for (Document doc : result) {
+	    System.out.println("Average Price: " + doc.getDouble("avgPrice"));
+	}
+	//3
+	 MongoCollection<Document> collection2 = database.getCollection("sales");  // Use 'sales' collection
+
+     // Aggregation to group by 'item' and find max 'price'
+     AggregateIterable<Document> result1 = collection2.aggregate(Arrays.asList(
+             group("$item", max("maxPrice", "$price"))
+     ));
+
+     // Print the result
+     for (Document doc : result1) {
+         System.out.println("Item: " + doc.getString("_id") + ", Max Price: " + doc.get("maxPrice"));
+     }
+	
+}}
+
