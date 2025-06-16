@@ -1,0 +1,62 @@
+-- Class Work
+show databases;
+create database VITAP;
+show tables from Vitap;
+drop database vitap;
+create table it(s_id int, s_name varchar(50), s_mark int);
+use vitap;
+show tables from vitap;
+select * from it;
+select * from cse;
+insert into cse values (101,'Aditya',88);
+
+-- 1. Create a database, 3 tables  4 columns(id,student_name,whatever) and 10 entries.
+create database University;
+use University;
+create table Science(s_id int, s_name varchar(50), s_gender varchar(1), fee float);
+create table Arts(s_id int, s_name varchar(50), s_gender varchar(1), fee float);
+create table Cabinet(s_id int, s_name varchar(50), s_gender varchar(1), fee float);
+insert into Science values (1,'Belarius','M',1000);
+insert into Science values (2,'Bhupathi Rao','M',2000);
+insert into Science values (3,'Bhanumathi','F',3000);
+insert into Science values (4,'Bhaskar','M',4000);
+insert into Science values (5,'Balakumar','M',5000);
+insert into Science values (6,'Belum','M',6000);
+insert into Science values (7,'Bajarang','M',1000);
+insert into Science values (8,'Bhim','M',7000);
+insert into Science values (9,'Balakumari','F',7000);
+insert into Science values (10,'Bhanu','M',100);
+insert into Arts values (1, 'Ram' , 'M',3000);
+insert into Arts values (2, 'Rahim' , 'M',80000);
+insert into Arts values (3, 'Rahul' , 'M',90000);
+insert into Arts values (4, 'Ranjith' , 'M',60000);
+insert into Arts values (5, 'Ramkumar' , 'M',30900);
+insert into Arts values (6, 'Ram Prakash' , 'M',47802);
+insert into Arts values (7, 'Rajesh' , 'M',68933);
+insert into Arts values (8, 'Ramesh' , 'M',58923);
+insert into Arts values (9, 'Rinku Sharma' , 'M',48022);
+insert into Arts values (10, 'Ramya' , 'F',480233);
+insert into Cabinet values (1, 'Aditya' , 'M',76543);
+insert into Cabinet values (2, 'Arunchalam' , 'M',6543);
+insert into Cabinet values (3, 'Adithi' , 'F',76543);
+insert into Cabinet values (4, 'Asha' , 'F',76522);
+insert into Cabinet values (5, 'Anand' , 'M',87654);
+insert into Cabinet values (6, 'Akira Nandan' , 'M',87654);
+insert into Cabinet values (7, 'Aharya' , 'F',87654);
+insert into Cabinet values (8, 'Atul' , 'M',23456);
+insert into Cabinet values (9, 'Ajith' , 'M',54.66);
+insert into Cabinet values (10, 'Akash' , 'M',6543);
+select * from Science;
+select * from Arts;
+select * from Cabinet;
+
+-- Class Work
+desc Science;
+desc arts;
+alter table Science add(address varchar(100));
+alter table arts add (address varchar(100), phone int4);
+alter table arts drop column phone;
+alter table cabinet add (address varchar(100) default 'India');
+insert into Cabinet values(11, 'Abhavya','F',2234,'USA');
+update cabinet set address='Canada' where fee<10000;
+update cabinet set fee=fee+70 where address='India';

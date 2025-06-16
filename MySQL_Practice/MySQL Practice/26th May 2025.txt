@@ -1,0 +1,208 @@
+package crud_operation;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.*;
+public class CRUD_Operation {
+
+	public static void main(String[] args) throws SQLException {
+		CRUD_Operation objTest=new CRUD_Operation();
+		
+Scanner in=new Scanner(System.in);
+System.out.println("Enter 1 to Enter New Record, 2 to Read, 3 to Update, 4 to delete and 5 to Alter.");
+int ni=in.nextInt();
+switch(ni) {
+case 1:
+System.out.println("Enter the Number of Records : ");
+int no=in.nextInt();
+while(no!=0) {
+	no--;
+System.out.println("Enter the Number : ");
+int n=in.nextInt();
+String buff=in.nextLine(); //this line does not work.
+System.out.println("Enter the Name : ");
+String na=in.nextLine();
+System.out.println("Enter the Marks : ");
+int mark=in.nextInt();
+objTest.create_data(n+"",na,mark);
+}
+break;
+case 2:
+objTest.read_data();
+break;
+case 3:
+objTest.update_data(101, 101, "Ranga", 89);
+break;
+case 4:
+objTest.delete_data(101);
+break;
+case 5:
+	System.out.println("Enter 1 to add column, 2 to drop column else quit");
+	int n=in.nextInt();
+	if(n!=1 && n!=2) {
+		break;
+	}
+	System.out.println("Enter number of columns");
+	int a=in.nextInt();
+	String name[]=new String[a];
+	String datay[]=new String[a];
+	int l=a;
+	l=l-1;
+	String budd=in.nextLine();
+	while(l!=-1){
+				System.out.println("Enter the column Name : ");
+				name[l]=in.nextLine();
+				datay[l]="";
+				if(n==1) {
+					System.out.println("Enter the Datatype : ");
+					datay[l]=in.nextLine();
+				}
+				l--;
+	}
+	String type="";
+	if(n==1) {
+		type="add";
+	}
+	else {
+		type="drop column";
+	}
+	objTest.alter_data(type,name,datay);
+	
+}
+
+}
+	//objTest.create_data("103", "manoj", 95);
+	//objTest.create_data("104", "karthick", 75);
+    
+
+public void create_data(String sl_no,String name,int mark){
+	DB_Connection obj_DB_Connection=new DB_Connection();
+	Connection connection=obj_DB_Connection.get_connection();
+	PreparedStatement ps=null;
+	try {
+		String query="insert into students values (?,?,?)";
+		ps=connection.prepareStatement(query);
+		ps.setString(1, sl_no);
+		ps.setString(2, name);
+		ps.setInt(3, mark);
+		System.out.println(ps);
+		ps.executeUpdate();
+	} catch (Exception e) {
+		System.out.println(e);
+	}
+}
+public void read_data(){
+    DB_Connection obj_DB_Connection=new DB_Connection();
+    Connection connection=obj_DB_Connection.get_connection();
+    PreparedStatement ps=null;
+    ResultSet rs=null;
+    try{
+        String query="select * from students";
+        ps=connection.prepareStatement(query);
+
+        System.out.println(ps);
+        rs=ps.executeQuery();
+        while(rs.next()){
+            System.out.println("Roll No. - "+rs.getString("rno"));
+            System.out.println("Name - "+rs.getString("name"));
+            System.out.println("Marks - "+rs.getString("marks"));
+            System.out.println("--------------------");
+        }
+    } catch (Exception e) {
+        System.out.println(e);
+    }
+}
+public void update_data(int sl_no,int new_sl_no,String name,int marks){
+    DB_Connection obj_DB_Connection=new DB_Connection();
+    Connection connection=obj_DB_Connection.get_connection();
+    PreparedStatement ps=null;
+    try {
+        String query="update students set rno=?,name=?,marks=? where rno=?";
+        ps=connection.prepareStatement(query);
+        ps.setInt(1, new_sl_no);
+        ps.setString(2, name);
+        ps.setInt(3, marks);
+        ps.setInt(4, sl_no);
+        System.out.println(ps); // This line prints the PreparedStatement object itself, not its SQL with parameters.
+        ps.executeUpdate();
+    } catch (Exception e) {
+        System.out.println(e);
+    }
+}
+public void delete_data(int sl_no){
+	DB_Connection obj_DB_Connection=new DB_Connection();
+	Connection connection=obj_DB_Connection.get_connection();
+	PreparedStatement ps=null;
+	try {
+		String query="delete from students where rno=?";
+		ps=connection.prepareStatement(query);
+		ps.setInt(1, sl_no);
+		System.out.println(ps);
+		ps.executeUpdate();
+	} catch (Exception e) {
+		System.out.println(e);
+	}
+}
+public void alter_data(String type, String name[], String datatype[]) throws SQLException{
+    DB_Connection obj_DB_Connection=new DB_Connection();
+    Connection connection=obj_DB_Connection.get_connection();
+    Statement stmt=connection.createStatement();
+    //PreparedStatement ps=null;
+    try {
+        String query="alter table students "+type+" ";
+        int n=name.length;
+        int j=n;
+        if (type.equalsIgnoreCase("drop column")) {
+        	while(n!=0) {
+            	if(n==j) {
+            	query=query+name[n-1];
+            	}
+            	else {
+            		query=","+query+name[n-1];
+            	}
+            	n--;
+            }
+        	boolean rs=stmt.execute(query);
+            if(!rs) {
+            	System.out.println("Operation Successfull");
+            }
+            else {
+            	System.out.println("Operation Unsuccessfull");
+            }
+            System.exit(0);
+        }
+        while(n!=0) {
+        	if(n==j) {
+        	query=query+"("+name[n-1]+" "+datatype[n-1];
+        	}
+        	else {
+        		query=","+query+name[n-1]+" "+datatype[n-1];
+        	}
+        	n--;
+        }
+        query=query+")";
+        /*ps=connection.prepareStatement(query);
+        ps.setInt(1, new_sl_no);
+        ps.setString(2, name);
+        ps.setInt(3, marks);
+        ps.setInt(4, sl_no);
+        System.out.println(ps); // This line prints the PreparedStatement object itself, not its SQL with parameters.
+        ps.executeUpdate();*/
+        boolean rs=stmt.execute(query);
+        if(!rs) {
+        	System.out.println("Operation Successfull");
+        }
+        else {
+        	System.out.println("Operation Unsuccessfull");
+        }
+    } catch (Exception e) {
+        System.out.println(e);
+    }
+}
+
+
+
+}
